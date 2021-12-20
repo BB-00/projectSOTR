@@ -26,12 +26,9 @@
  */
 
 /******************************************************************************
- * Paulo Pedreiras. Sept 2021
- * 
- * This demo creates a periodic task and a load/interfering task.
- * These tasks have settable priorities and the time used by each instance 
- * of the load/interfering task can also be tuned.
- * On each instance tasks actuate on the leds and write a message to the UART.
+ * Afonso Teixeira, 93170
+ * Bernardo Barreto, 93271
+ * Feb 2022
  * 
  * History:
  * 2019/04: adapted form DETPIC to Digilent ChipKit boards
@@ -71,7 +68,7 @@ static void prvSetupHardware( void );
 /*
  * mainSetrLedBlink create the app tasks
  */
-extern void mainSetrLedBlink( void );
+extern void mainProjectSOTR( void );
 
 /*-----------------------------------------------------------*/
 
@@ -84,7 +81,7 @@ int main( void )
 	prvSetupHardware();
 
     /* Run application */
-    mainSetrLedBlink();
+    mainProjectSOTR();
     
 	return 0;
 }
