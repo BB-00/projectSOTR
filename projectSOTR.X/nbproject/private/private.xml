@@ -8,6 +8,10 @@
             <file>file:/C:/E/Dev/FreeRTOS/WorkingCopy/FreeRTOS/Demo/PIC32MX_MPLAB/lcd.c</file>
             <file>file:/C:/E/Dev/FreeRTOS/WorkingCopy/FreeRTOS/Demo/PIC32MX_MPLAB/main_full.c</file>
         </group>
-        <group/>
+        <group>
+            <file>file:/home/bernardo/Documents/ECT-Courses/Ano4/SOTR/Praticas/FreeRTOSv202111.00/FreeRTOS/Demo/projectSOTR/TMan.h</file>
+            <file>file:/home/bernardo/Documents/ECT-Courses/Ano4/SOTR/Praticas/FreeRTOSv202111.00/FreeRTOS/Demo/projectSOTR/mainProjectSOTR.c</file>
+            <file>file:/home/bernardo/Documents/ECT-Courses/Ano4/SOTR/Praticas/FreeRTOSv202111.00/FreeRTOS/Demo/projectSOTR/main.c</file>
+        </group>
     </open-files>
 </project-private>
