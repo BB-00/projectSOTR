@@ -33,6 +33,8 @@
 #define E_PERIOD_MS 	( 500 / portTICK_RATE_MS )
 #define F_PERIOD_MS 	( 600 / portTICK_RATE_MS )
 
+#define LED_FLASH_PERIOD_MS (100 / portTICK_RATE_MS)
+
 /* Control the load task execution time (# of iterations)*/
 /* Each unit corresponds to approx 50 ms*/
 #define INTERF_WORKLOAD          ( 20)
@@ -74,6 +76,7 @@ void pvLedFlash(void *pvParam)
 }
 */
 
+
 /*
 void pvInterfTask(void *pvParam)
 {
@@ -108,7 +111,7 @@ void pvInterfTask(void *pvParam)
 }
 */
 
-void pvTask(void *pvParam){
+void pvTask_A(void *pvParam){
     int iTaskTicks = 0;
     uint8_t mesg[80];
     
@@ -124,6 +127,126 @@ void pvTask(void *pvParam){
     
     for(;;) {
         vTaskDelayUntil(&xLastWakeTime, A_PERIOD_MS); // added code
+        
+        PORTAbits.RA3 = !PORTAbits.RA3;
+        sprintf(mesg,"Task %s (job %d)\n\r",xThisTaskName,xLastWakeTime);
+        PrintStr(mesg);
+        //vTaskDelay(LED_FLASH_PERIOD_MS);        
+    }
+}
+
+void pvTask_B(void *pvParam){
+    int iTaskTicks = 0;
+    uint8_t mesg[80];
+    
+    // added code
+    TickType_t xLastWakeTime;
+    //const TickType_t xFrequency = LED_FLASH_PERIOD_MS;
+    
+    xLastWakeTime = xTaskGetTickCount();
+    
+    TaskHandle_t xThisTaskHandle = xTaskGetCurrentTaskHandle();
+    char * xThisTaskName = pcTaskGetName(xThisTaskHandle);
+    // ------
+    
+    for(;;) {
+        vTaskDelayUntil(&xLastWakeTime, B_PERIOD_MS); // added code
+        
+        PORTAbits.RA3 = !PORTAbits.RA3;
+        sprintf(mesg,"Task %s (job %d)\n\r",xThisTaskName,xLastWakeTime);
+        PrintStr(mesg);
+        //vTaskDelay(LED_FLASH_PERIOD_MS);        
+    }
+}
+
+void pvTask_C(void *pvParam){
+    int iTaskTicks = 0;
+    uint8_t mesg[80];
+    
+    // added code
+    TickType_t xLastWakeTime;
+    //const TickType_t xFrequency = LED_FLASH_PERIOD_MS;
+    
+    xLastWakeTime = xTaskGetTickCount();
+    
+    TaskHandle_t xThisTaskHandle = xTaskGetCurrentTaskHandle();
+    char * xThisTaskName = pcTaskGetName(xThisTaskHandle);
+    // ------
+    
+    for(;;) {
+        vTaskDelayUntil(&xLastWakeTime, C_PERIOD_MS); // added code
+        
+        PORTAbits.RA3 = !PORTAbits.RA3;
+        sprintf(mesg,"Task %s (job %d)\n\r",xThisTaskName,xLastWakeTime);
+        PrintStr(mesg);
+        //vTaskDelay(LED_FLASH_PERIOD_MS);        
+    }
+}
+
+void pvTask_D(void *pvParam){
+    int iTaskTicks = 0;
+    uint8_t mesg[80];
+    
+    // added code
+    TickType_t xLastWakeTime;
+    //const TickType_t xFrequency = LED_FLASH_PERIOD_MS;
+    
+    xLastWakeTime = xTaskGetTickCount();
+    
+    TaskHandle_t xThisTaskHandle = xTaskGetCurrentTaskHandle();
+    char * xThisTaskName = pcTaskGetName(xThisTaskHandle);
+    // ------
+    
+    for(;;) {
+        vTaskDelayUntil(&xLastWakeTime, D_PERIOD_MS); // added code
+        
+        PORTAbits.RA3 = !PORTAbits.RA3;
+        sprintf(mesg,"Task %s (job %d)\n\r",xThisTaskName,xLastWakeTime);
+        PrintStr(mesg);
+        //vTaskDelay(LED_FLASH_PERIOD_MS);        
+    }
+}
+
+void pvTask_E(void *pvParam){
+    int iTaskTicks = 0;
+    uint8_t mesg[80];
+    
+    // added code
+    TickType_t xLastWakeTime;
+    //const TickType_t xFrequency = LED_FLASH_PERIOD_MS;
+    
+    xLastWakeTime = xTaskGetTickCount();
+    
+    TaskHandle_t xThisTaskHandle = xTaskGetCurrentTaskHandle();
+    char * xThisTaskName = pcTaskGetName(xThisTaskHandle);
+    // ------
+    
+    for(;;) {
+        vTaskDelayUntil(&xLastWakeTime, E_PERIOD_MS); // added code
+        
+        PORTAbits.RA3 = !PORTAbits.RA3;
+        sprintf(mesg,"Task %s (job %d)\n\r",xThisTaskName,xLastWakeTime);
+        PrintStr(mesg);
+        //vTaskDelay(LED_FLASH_PERIOD_MS);        
+    }
+}
+
+void pvTask_F(void *pvParam){
+    int iTaskTicks = 0;
+    uint8_t mesg[80];
+    
+    // added code
+    TickType_t xLastWakeTime;
+    //const TickType_t xFrequency = LED_FLASH_PERIOD_MS;
+    
+    xLastWakeTime = xTaskGetTickCount();
+    
+    TaskHandle_t xThisTaskHandle = xTaskGetCurrentTaskHandle();
+    char * xThisTaskName = pcTaskGetName(xThisTaskHandle);
+    // ------
+    
+    for(;;) {
+        vTaskDelayUntil(&xLastWakeTime, F_PERIOD_MS); // added code
         
         PORTAbits.RA3 = !PORTAbits.RA3;
         sprintf(mesg,"Task %s (job %d)\n\r",xThisTaskName,xLastWakeTime);
@@ -158,14 +281,14 @@ int mainProjectSOTR( void )
     printf("Starting FreeRTOS SOTR Project\n\r");
     printf("*********************************************\n\r");
     
-      
+    TMAN_Init();
     /* Create the tasks defined within this file. */
-	xTaskCreate( pvTask, ( const signed char * const ) "A", configMINIMAL_STACK_SIZE, NULL, PRIORITY_A, NULL );
-    xTaskCreate( pvTask, ( const signed char * const ) "B", configMINIMAL_STACK_SIZE, NULL, PRIORITY_B, NULL );
-    xTaskCreate( pvTask, ( const signed char * const ) "C", configMINIMAL_STACK_SIZE, NULL, PRIORITY_C, NULL );
-    xTaskCreate( pvTask, ( const signed char * const ) "D", configMINIMAL_STACK_SIZE, NULL, PRIORITY_D, NULL );
-    //xTaskCreate( pvTask, ( const signed char * const ) "E", configMINIMAL_STACK_SIZE, NULL, PRIORITY_E, NULL );
-    //xTaskCreate( pvTask, ( const signed char * const ) "F", configMINIMAL_STACK_SIZE, NULL, PRIORITY_F, NULL );
+	xTaskCreate( pvTask_A, ( const signed char * const ) "A", configMINIMAL_STACK_SIZE, NULL, PRIORITY_A, NULL );
+    xTaskCreate( pvTask_B, ( const signed char * const ) "B", configMINIMAL_STACK_SIZE, NULL, PRIORITY_B, NULL );
+    xTaskCreate( pvTask_C, ( const signed char * const ) "C", configMINIMAL_STACK_SIZE, NULL, PRIORITY_C, NULL );
+    xTaskCreate( pvTask_D, ( const signed char * const ) "D", configMINIMAL_STACK_SIZE, NULL, PRIORITY_D, NULL );
+    xTaskCreate( pvTask_E, ( const signed char * const ) "E", configMINIMAL_STACK_SIZE, NULL, PRIORITY_E, NULL );
+    xTaskCreate( pvTask_F, ( const signed char * const ) "F", configMINIMAL_STACK_SIZE, NULL, PRIORITY_F, NULL );
 
     /* Finally start the scheduler. */
 	vTaskStartScheduler();
