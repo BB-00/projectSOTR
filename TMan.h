@@ -31,33 +31,16 @@
 
 #endif /* _EXAMPLE_FILE_NAME_H */
 
-typedef struct{
-    Task** tasks;
-    int size;
-}TaskList;
 
-typedef struct{
-    TaskHandle_t tHandle;
-    char* name;
-    int period;
-    int state; // 0-suspended / 1-running
-    int priority;
-}Task;
+void TMAN_Init();
 
-void TMAN_Init(int nTasks){
-    // create task for checking others
-    TaskList* TaskList = (TaskList*) malloc (sizeof(TaskList));
-    TaskList->size=nTasks;
-}
+void TMAN_TaskWaitPeriod(TaskHandle_t task);
 
-void TMAN_TaskWaitPeriod(TaskHandle_t task){
-    vTaskSuspend(task);
-}
+void TMAN_TaskAdd(char* nome);
 
-void TMAN_TaskRegisterAttributes(int period){
+void TMAN_TaskRegisterAttributes(int period);
 
-}
-
+_Task TMAN_GetTaskFromList(char* nome);
 /* *****************************************************************************
  End of File
  */
