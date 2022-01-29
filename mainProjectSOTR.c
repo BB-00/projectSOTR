@@ -25,6 +25,9 @@
 /* App includes */
 #include "../UART/uart.h"
 
+/* TMAN include */
+#include "TMan.h"
+
 /* Set the tasks' period (in system ticks) */
 #define A_PERIOD_MS 	( 100 / portTICK_RATE_MS )
 #define B_PERIOD_MS 	( 200 / portTICK_RATE_MS )
@@ -115,21 +118,18 @@ void pvTask_A(void *pvParam){
     int iTaskTicks = 0;
     uint8_t mesg[80];
     
-    // added code
     TickType_t xLastWakeTime;
     //const TickType_t xFrequency = LED_FLASH_PERIOD_MS;
     
     xLastWakeTime = xTaskGetTickCount();
     
-    TaskHandle_t xThisTaskHandle = xTaskGetCurrentTaskHandle();
-    char * xThisTaskName = pcTaskGetName(xThisTaskHandle);
-    // ------
+    TaskHandle_t xTHA = xTaskGetCurrentTaskHandle();
+    TMAN_TaskAdd("A", xTHA);
     
     for(;;) {
         vTaskDelayUntil(&xLastWakeTime, A_PERIOD_MS); // added code
         
-        PORTAbits.RA3 = !PORTAbits.RA3;
-        sprintf(mesg,"Task %s (job %d)\n\r",xThisTaskName,xLastWakeTime);
+        sprintf(mesg,"Task A (%d)\n\r",xLastWakeTime);
         PrintStr(mesg);
         //vTaskDelay(LED_FLASH_PERIOD_MS);        
     }
@@ -139,21 +139,18 @@ void pvTask_B(void *pvParam){
     int iTaskTicks = 0;
     uint8_t mesg[80];
     
-    // added code
     TickType_t xLastWakeTime;
     //const TickType_t xFrequency = LED_FLASH_PERIOD_MS;
     
     xLastWakeTime = xTaskGetTickCount();
     
-    TaskHandle_t xThisTaskHandle = xTaskGetCurrentTaskHandle();
-    char * xThisTaskName = pcTaskGetName(xThisTaskHandle);
-    // ------
+    TaskHandle_t xTHB = xTaskGetCurrentTaskHandle();
+    TMAN_TaskAdd("B", xTHB);
     
     for(;;) {
         vTaskDelayUntil(&xLastWakeTime, B_PERIOD_MS); // added code
         
-        PORTAbits.RA3 = !PORTAbits.RA3;
-        sprintf(mesg,"Task %s (job %d)\n\r",xThisTaskName,xLastWakeTime);
+        sprintf(mesg,"Task B (%d)\n\r",xLastWakeTime);
         PrintStr(mesg);
         //vTaskDelay(LED_FLASH_PERIOD_MS);        
     }
@@ -163,21 +160,18 @@ void pvTask_C(void *pvParam){
     int iTaskTicks = 0;
     uint8_t mesg[80];
     
-    // added code
     TickType_t xLastWakeTime;
     //const TickType_t xFrequency = LED_FLASH_PERIOD_MS;
     
     xLastWakeTime = xTaskGetTickCount();
     
-    TaskHandle_t xThisTaskHandle = xTaskGetCurrentTaskHandle();
-    char * xThisTaskName = pcTaskGetName(xThisTaskHandle);
-    // ------
+    TaskHandle_t xTHC = xTaskGetCurrentTaskHandle();
+    TMAN_TaskAdd("C", xTHC);
     
     for(;;) {
         vTaskDelayUntil(&xLastWakeTime, C_PERIOD_MS); // added code
         
-        PORTAbits.RA3 = !PORTAbits.RA3;
-        sprintf(mesg,"Task %s (job %d)\n\r",xThisTaskName,xLastWakeTime);
+        sprintf(mesg,"Task C (%d)\n\r",xLastWakeTime);
         PrintStr(mesg);
         //vTaskDelay(LED_FLASH_PERIOD_MS);        
     }
@@ -187,21 +181,18 @@ void pvTask_D(void *pvParam){
     int iTaskTicks = 0;
     uint8_t mesg[80];
     
-    // added code
     TickType_t xLastWakeTime;
     //const TickType_t xFrequency = LED_FLASH_PERIOD_MS;
     
     xLastWakeTime = xTaskGetTickCount();
     
-    TaskHandle_t xThisTaskHandle = xTaskGetCurrentTaskHandle();
-    char * xThisTaskName = pcTaskGetName(xThisTaskHandle);
-    // ------
+    TaskHandle_t xTHD = xTaskGetCurrentTaskHandle();
+    TMAN_TaskAdd("D", xTHD);
     
     for(;;) {
         vTaskDelayUntil(&xLastWakeTime, D_PERIOD_MS); // added code
         
-        PORTAbits.RA3 = !PORTAbits.RA3;
-        sprintf(mesg,"Task %s (job %d)\n\r",xThisTaskName,xLastWakeTime);
+        sprintf(mesg,"Task D (%d)\n\r",xLastWakeTime);
         PrintStr(mesg);
         //vTaskDelay(LED_FLASH_PERIOD_MS);        
     }
@@ -211,21 +202,18 @@ void pvTask_E(void *pvParam){
     int iTaskTicks = 0;
     uint8_t mesg[80];
     
-    // added code
     TickType_t xLastWakeTime;
     //const TickType_t xFrequency = LED_FLASH_PERIOD_MS;
     
     xLastWakeTime = xTaskGetTickCount();
     
-    TaskHandle_t xThisTaskHandle = xTaskGetCurrentTaskHandle();
-    char * xThisTaskName = pcTaskGetName(xThisTaskHandle);
-    // ------
+    TaskHandle_t xTHE = xTaskGetCurrentTaskHandle();
+    TMAN_TaskAdd("E", xTHE);
     
     for(;;) {
         vTaskDelayUntil(&xLastWakeTime, E_PERIOD_MS); // added code
         
-        PORTAbits.RA3 = !PORTAbits.RA3;
-        sprintf(mesg,"Task %s (job %d)\n\r",xThisTaskName,xLastWakeTime);
+        sprintf(mesg,"Task E (%d)\n\r",xLastWakeTime);
         PrintStr(mesg);
         //vTaskDelay(LED_FLASH_PERIOD_MS);        
     }
@@ -235,21 +223,18 @@ void pvTask_F(void *pvParam){
     int iTaskTicks = 0;
     uint8_t mesg[80];
     
-    // added code
     TickType_t xLastWakeTime;
     //const TickType_t xFrequency = LED_FLASH_PERIOD_MS;
     
     xLastWakeTime = xTaskGetTickCount();
     
-    TaskHandle_t xThisTaskHandle = xTaskGetCurrentTaskHandle();
-    char * xThisTaskName = pcTaskGetName(xThisTaskHandle);
-    // ------
+    TaskHandle_t xTHF = xTaskGetCurrentTaskHandle();
+    TMAN_TaskAdd("F", xTHF);
     
     for(;;) {
         vTaskDelayUntil(&xLastWakeTime, F_PERIOD_MS); // added code
         
-        PORTAbits.RA3 = !PORTAbits.RA3;
-        sprintf(mesg,"Task %s (job %d)\n\r",xThisTaskName,xLastWakeTime);
+        sprintf(mesg,"Task F (%d)\n\r",xLastWakeTime);
         PrintStr(mesg);
         //vTaskDelay(LED_FLASH_PERIOD_MS);        
     }
@@ -258,15 +243,8 @@ void pvTask_F(void *pvParam){
 /*
  * Create the demo tasks then start the scheduler.
  */
-int mainProjectSOTR( void )
-{
-    /*
-    // Set RA3 (LD4) and RC1 (LD5) as outputs
-    TRISAbits.TRISA3 = 0;
-    TRISCbits.TRISC1 = 0;
+int mainProjectSOTR( void ) {
     PORTAbits.RA3 = 0;
-    PORTCbits.RC1 = 0;
-    */
 
 	// Init UART and redirect stdin/stdot/stderr to UART
     if(UartInit(configPERIPHERAL_CLOCK_HZ, 115200) != UART_SUCCESS) {
@@ -289,7 +267,7 @@ int mainProjectSOTR( void )
     xTaskCreate( pvTask_D, ( const signed char * const ) "D", configMINIMAL_STACK_SIZE, NULL, PRIORITY_D, NULL );
     xTaskCreate( pvTask_E, ( const signed char * const ) "E", configMINIMAL_STACK_SIZE, NULL, PRIORITY_E, NULL );
     xTaskCreate( pvTask_F, ( const signed char * const ) "F", configMINIMAL_STACK_SIZE, NULL, PRIORITY_F, NULL );
-
+    
     /* Finally start the scheduler. */
 	vTaskStartScheduler();
 

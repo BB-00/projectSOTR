@@ -27,20 +27,30 @@
  */
 
 /* TODO:  Include other files here if needed. */
-
+#include <string.h>
+#include "FreeRTOS.h"
+#include "task.h"
 
 #endif /* _EXAMPLE_FILE_NAME_H */
+
+typedef struct _Task{
+    TaskHandle_t tHandle;
+    char* name;
+    int period;
+    int state; // 0-suspended / 1-running
+    int priority;
+} _Task;
 
 
 void TMAN_Init();
 
-void TMAN_TaskWaitPeriod(TaskHandle_t task);
+void TMAN_TaskWaitPeriod(TaskHandle_t task, char* nome);
 
-void TMAN_TaskAdd(char* nome);
+void TMAN_TaskAdd(char* nome, TaskHandle_t task);
 
 void TMAN_TaskRegisterAttributes(int period);
 
-_Task TMAN_GetTaskFromList(char* nome);
+int TMAN_GetTaskFromList(char* nome);
 /* *****************************************************************************
  End of File
  */

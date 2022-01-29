@@ -26,7 +26,12 @@
 
 /* TODO:  Include other files here if needed. */
 
+
 #include <string.h>
+#include "FreeRTOS.h"
+#include "task.h"
+
+#include "TMan.h"
 
 /* ************************************************************************** */
 /* ************************************************************************** */
@@ -144,36 +149,64 @@ int ExampleInterfaceFunction(int param1, int param2) {
     return 0;
 }
 
-struct _taskHandler{
-    _Task* task = pvPortMalloc (16*sizeof(_Task));
-};
 
-struct _Task{
-    TaskHandle_t tHandle;
-    char* name;
-    int period;
-    int state; // 0-suspended / 1-running
-    int priority;
-};
+/* Set the tasks' period (in system ticks) */
+#define PERIOD_MS_MASTER	( 100 / portTICK_RATE_MS )
+
+/* Priorities of the demo application tasks (high numb. -> high prio.) */
+#define PRIORITY_MASTER      ( tskIDLE_PRIORITY + 9 )
 
 int idx=0;
-struct _taskHandler* taskList;
+unsigned long long int nActivations_TaskHandler;
+_Task** taskList;
+
+void pvTask_Master(void *pvParam){
+    TickType_t xLastWakeTime;
+    xLastWakeTime = xTaskGetTickCount();
+    
+    TaskHandle_t xTHMT = xTaskGetCurrentTaskHandle();
+    TMAN_TaskAdd("C", xTHMT);
+    
+    for(;;) {
+        vTaskDelayUntil(&xLastWakeTime, PERIOD_MS_MASTER); // added code
+        nActivations_TaskHandler++;
+        
+        for(int i=1 ; i<=idx ; i++){
+            if(((nActivations_TaskHandler*100) % taskList[i]->period) == 0){
+                taskList[i]->state = 1;
+                vTaskResume(taskList[i]->tHandle);
+            }
+        }
+    }
+}
 
 void TMAN_Init(){
     // create task for checking others
-    taskList = pvPortMalloc (sizeof(_taskHandler));
+    taskList = (_Task**) pvPortMalloc (16*sizeof(_Task*));
+    
+   	xTaskCreate( pvTask_Master, ( const signed char * const ) "MasterTask", configMINIMAL_STACK_SIZE, NULL, PRIORITY_MASTER, NULL );
+    /*
+    taskList[idx]->tHandle = NULL;
+    taskList[idx]->name = "MasterTask";
+    taskList[idx]->priority = PRIORITY_MASTER;
+    idx++;
+    */
 }
 
 void TMAN_TaskWaitPeriod(TaskHandle_t task, char* nome){
     vTaskSuspend(task);
     int index = TMAN_GetTaskFromList(nome);
-    taskList.task[index]->state = 0;
+    taskList[index]->state = 0;
 }
 
-void TMAN_TaskAdd(char* nome){
-    _Task t;
-    t.tHandle = xTaskGetHandle(nome);
-    taskList.task[idx] = t;
+void TMAN_TaskAdd(char* nome, TaskHandle_t task){
+    taskList[idx]->tHandle = task;
+    taskList[idx]->name = nome;
+    taskList[idx]->priority = uxTaskPriorityGet(taskList[idx]->tHandle);
+    
+    // não tenho a certeza
+    taskList[idx]->state = 1;
+    
     idx++;
 }
 
@@ -182,8 +215,8 @@ void TMAN_TaskRegisterAttributes(int period){
 }
 
 int TMAN_GetTaskFromList(char* nome){
-    for(int i=0; i<=idx; i++){
-        if (strcmp(taskList.task[i]->name, nome)==0) return i;
+    for(int i=1; i<=idx; i++){
+        if (strcmp(taskList[i]->name, nome)==0) return i;
     }
 }
 
