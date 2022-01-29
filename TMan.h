@@ -39,6 +39,9 @@ typedef struct _Task{
     int period;
     int state; // 0-suspended / 1-running
     int priority;
+    int nActivations;
+    int phase;
+    int deadline;
 } _Task;
 
 

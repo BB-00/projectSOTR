@@ -157,7 +157,7 @@ int ExampleInterfaceFunction(int param1, int param2) {
 #define PRIORITY_MASTER      ( tskIDLE_PRIORITY + 9 )
 
 int idx=0;
-unsigned long long int nActivations_TaskHandler;
+unsigned long long int nActivations_TaskHandler=0;
 _Task** taskList;
 
 void pvTask_Master(void *pvParam){
@@ -170,13 +170,20 @@ void pvTask_Master(void *pvParam){
     for(;;) {
         vTaskDelayUntil(&xLastWakeTime, PERIOD_MS_MASTER); // added code
         nActivations_TaskHandler++;
+        int prty = taskList[1]->priority;
+        int aux=1;
         
         for(int i=1 ; i<=idx ; i++){
-            if(((nActivations_TaskHandler*100) % taskList[i]->period) == 0){
-                taskList[i]->state = 1;
-                vTaskResume(taskList[i]->tHandle);
+            if(((nActivations_TaskHandler) % taskList[i]->period) == 0){
+                if (taskList[i]->priority > prty){
+                    prty = taskList[i]->priority;
+                    aux = i;
+                }
             }
         }
+        taskList[aux]->state = 1;
+        taskList[aux]->nActivations++;
+        vTaskResume(taskList[aux]->tHandle);
     }
 }
 
@@ -193,6 +200,11 @@ void TMAN_Init(){
     */
 }
 
+//void vPortFree( void * pv ) - libertar bloco de memória previamente alocado.
+void TMAN_Close(){
+    vPortFree(taskList);
+}
+
 void TMAN_TaskWaitPeriod(TaskHandle_t task, char* nome){
     vTaskSuspend(task);
     int index = TMAN_GetTaskFromList(nome);
@@ -203,21 +215,30 @@ void TMAN_TaskAdd(char* nome, TaskHandle_t task){
     taskList[idx]->tHandle = task;
     taskList[idx]->name = nome;
     taskList[idx]->priority = uxTaskPriorityGet(taskList[idx]->tHandle);
+    taskList[idx]->nActivations = 0;
     
     // não tenho a certeza
-    taskList[idx]->state = 1;
+    //taskList[idx]->state = 1;
     
     idx++;
 }
 
-void TMAN_TaskRegisterAttributes(int period){
-    
+void TMAN_TaskRegisterAttributes(char* nome, int period, int deadline, int phase){
+    int index = TMAN_GetTaskFromList(nome);
+    taskList[index]->period = period;
+    taskList[index]->deadline = deadline;
+    taskList[index]->phase = phase;
 }
 
 int TMAN_GetTaskFromList(char* nome){
     for(int i=1; i<=idx; i++){
         if (strcmp(taskList[i]->name, nome)==0) return i;
     }
+}
+
+int TMAN_TaskStats(char* nome){
+    int index = TMAN_GetTaskFromList(nome);
+    return taskList[index]->nActivations;
 }
 
 /* *****************************************************************************
