@@ -151,95 +151,87 @@ int ExampleInterfaceFunction(int param1, int param2) {
 
 
 /* Set the tasks' period (in system ticks) */
-#define PERIOD_MS_MASTER	( 100 / portTICK_RATE_MS )
+//#define PERIOD_MS_MASTER	( 100 / portTICK_RATE_MS )
 
 /* Priorities of the demo application tasks (high numb. -> high prio.) */
-#define PRIORITY_MASTER      ( tskIDLE_PRIORITY + 9 )
+//#define PRIORITY_MASTER      ( tskIDLE_PRIORITY + 9 )
 
-int idx=0;
-unsigned long long int nActivations_TaskHandler=0;
-_Task** taskList;
+//int idx=0;
+//unsigned long long int nActivations_TaskHandler=0;
+//_Task taskList[16];
 
-void pvTask_Master(void *pvParam){
-    TickType_t xLastWakeTime;
-    xLastWakeTime = xTaskGetTickCount();
-    
-    TaskHandle_t xTHMT = xTaskGetCurrentTaskHandle();
-    TMAN_TaskAdd("C", xTHMT);
-    
-    for(;;) {
-        vTaskDelayUntil(&xLastWakeTime, PERIOD_MS_MASTER); // added code
-        nActivations_TaskHandler++;
-        int prty = taskList[1]->priority;
-        int aux=1;
-        
-        for(int i=1 ; i<=idx ; i++){
-            if(((nActivations_TaskHandler) % taskList[i]->period) == 0){
-                if (taskList[i]->priority > prty){
-                    prty = taskList[i]->priority;
-                    aux = i;
-                }
-            }
-        }
-        taskList[aux]->state = 1;
-        taskList[aux]->nActivations++;
-        vTaskResume(taskList[aux]->tHandle);
-    }
-}
-
-void TMAN_Init(){
+//void TMAN_Init(){
     // create task for checking others
-    taskList = (_Task**) pvPortMalloc (16*sizeof(_Task*));
+    //taskList[16];//= (_Task**) pvPortMalloc (16*sizeof(_Task*));
     
-   	xTaskCreate( pvTask_Master, ( const signed char * const ) "MasterTask", configMINIMAL_STACK_SIZE, NULL, PRIORITY_MASTER, NULL );
     /*
     taskList[idx]->tHandle = NULL;
     taskList[idx]->name = "MasterTask";
     taskList[idx]->priority = PRIORITY_MASTER;
     idx++;
     */
+//}
+
+/*
+int TMAN_getIDX(){
+    return idx;
 }
 
+int TMAN_getNActivations_TaskHandler(){
+    return nActivations_TaskHandler;
+}
+
+void TMAN_putNActivations_TaskHandler(){
+    nActivations_TaskHandler++;
+}
+
+_Task** TMAN_getTaskList(){
+    return &taskList;
+}
+*/
+
+/*
 //void vPortFree( void * pv ) - libertar bloco de memória previamente alocado.
 void TMAN_Close(){
     vPortFree(taskList);
 }
 
 void TMAN_TaskWaitPeriod(TaskHandle_t task, char* nome){
-    vTaskSuspend(task);
     int index = TMAN_GetTaskFromList(nome);
-    taskList[index]->state = 0;
+    taskList[index].state = 0;
+    vTaskSuspend(task);
 }
 
 void TMAN_TaskAdd(char* nome, TaskHandle_t task){
-    taskList[idx]->tHandle = task;
-    taskList[idx]->name = nome;
-    taskList[idx]->priority = uxTaskPriorityGet(taskList[idx]->tHandle);
-    taskList[idx]->nActivations = 0;
+    taskList[idx].tHandle = task;
+    taskList[idx].name = nome;
+    taskList[idx].priority = uxTaskPriorityGet(taskList[idx].tHandle);
+    taskList[idx].nActivations = 0;
     
     // não tenho a certeza
-    //taskList[idx]->state = 1;
+    taskList[idx].state = 1;
     
     idx++;
 }
 
 void TMAN_TaskRegisterAttributes(char* nome, int period, int deadline, int phase){
     int index = TMAN_GetTaskFromList(nome);
-    taskList[index]->period = period;
-    taskList[index]->deadline = deadline;
-    taskList[index]->phase = phase;
+    taskList[index].period = period;
+    taskList[index].deadline = deadline;
+    taskList[index].phase = phase;
 }
 
 int TMAN_GetTaskFromList(char* nome){
     for(int i=1; i<=idx; i++){
-        if (strcmp(taskList[i]->name, nome)==0) return i;
+        if (strcmp(taskList[i].name, nome)==0) return i;
     }
 }
 
 int TMAN_TaskStats(char* nome){
     int index = TMAN_GetTaskFromList(nome);
-    return taskList[index]->nActivations;
+    return taskList[index].nActivations;
 }
+*/
 
 /* *****************************************************************************
  End of File

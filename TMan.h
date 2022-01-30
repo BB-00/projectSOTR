@@ -33,6 +33,7 @@
 
 #endif /* _EXAMPLE_FILE_NAME_H */
 
+/*
 typedef struct _Task{
     TaskHandle_t tHandle;
     char* name;
@@ -43,17 +44,23 @@ typedef struct _Task{
     int phase;
     int deadline;
 } _Task;
-
-
+*/
+/*
+int idx=0;
+unsigned long long int nActivations_TaskHandler=0;
+_Task taskList[16];
+*/
+/*
 void TMAN_Init();
 
 void TMAN_TaskWaitPeriod(TaskHandle_t task, char* nome);
 
 void TMAN_TaskAdd(char* nome, TaskHandle_t task);
 
-void TMAN_TaskRegisterAttributes(int period);
+void TMAN_TaskRegisterAttributes(char* nome, int period, int deadline, int phase);
 
 int TMAN_GetTaskFromList(char* nome);
+*/
 /* *****************************************************************************
  End of File
  */
