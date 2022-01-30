@@ -69,10 +69,12 @@ typedef struct _Task{
     int nActivations;
     int phase;
     int deadline;
+    char precedence;
+    int dlMisses;
 } _Task;
 
 int idx=0;
-unsigned long long int nActivations_TaskHandler=0;
+unsigned long long int TMAN_Ticks=0;
 _Task taskList[16];
 
 void TMAN_Init(){
@@ -101,34 +103,25 @@ void TMAN_TaskAdd(char* nome, TaskHandle_t task){
     taskList[idx].name = nome;
     taskList[idx].priority = uxTaskPriorityGet(taskList[idx].tHandle);
     taskList[idx].nActivations = 0;
-    
-    // não tenho a certeza
+    taskList[idx].dlMisses = 0;
     taskList[idx].state = 1;
     
     idx++;
 }
 
-void TMAN_TaskRegisterAttributes(char* nome, int period, int priority, int deadline, int phase){
+void TMAN_TaskRegisterAttributes(char* nome, int period, int priority, int deadline, int phase, char precedence){
     int index = TMAN_GetTaskFromList(nome);
     taskList[index].period = period;
     taskList[index].priority = priority;
     taskList[index].deadline = deadline;
     taskList[index].phase = phase;
+    taskList[index].precedence = precedence;
 }
 
 int TMAN_TaskStats(char* nome){
     int index = TMAN_GetTaskFromList(nome);
     return taskList[index].nActivations;
 }
-
-
-
-
-
-
-
-
-
 
 
 
@@ -204,7 +197,7 @@ void pvTask_Master(void *pvParam){
         vTaskDelayUntil(&xLastWakeTime, PERIOD_MS_MASTER);
         sprintf(mesg,"Master Task (%d)\n\r",xLastWakeTime);
         PrintStr(mesg);
-        nActivations_TaskHandler++;
+        TMAN_Ticks++;
         int prty = 0;
         int aux=0;
         
@@ -217,12 +210,20 @@ void pvTask_Master(void *pvParam){
             int a = taskList[i].period;
             sprintf(mesg,"TaskPeriod: %d \n\r", a);
             PrintStr(mesg);
-            int b = nActivations_TaskHandler % taskList[i].period;
+            int b = TMAN_Ticks % taskList[i].period;
             sprintf(mesg,"Resto: %d \n\r", b);
             PrintStr(mesg);
             */
-            if(nActivations_TaskHandler<taskList[i].phase) continue;
-            if((((nActivations_TaskHandler - taskList[i].phase ) % taskList[i].period) == 0) && taskList[i].state==0){
+            if(TMAN_Ticks<taskList[i].phase) continue;
+            if(taskList[i].deadline > 0 && (taskList[i].deadline + (taskList[i].period * taskList[i].nActivations) < TMAN_Ticks )){
+                vTaskSuspend(taskList[i].tHandle);
+                taskList[i].state = 0;
+                taskList[i].dlMisses++;
+            }
+            if(strcmp(taskList[i].precedence, '')!=0){
+                
+            }
+            if((((TMAN_Ticks - taskList[i].phase ) % taskList[i].period) == 0) && taskList[i].state==0){
                 taskList[i].state = 1;
                 taskList[i].nActivations++;
                 vTaskResume(taskList[i].tHandle);
@@ -387,27 +388,27 @@ int mainProjectSOTR( void ) {
 	xTaskCreate( pvTask_A, ( const signed char * const ) "A", configMINIMAL_STACK_SIZE, NULL, PRIORITY_A, NULL );
     TaskHandle_t xTHA = xTaskGetHandle("A");
     TMAN_TaskAdd("A", xTHA);
-    TMAN_TaskRegisterAttributes("A",2,PRIORITY_A,0,5);
+    TMAN_TaskRegisterAttributes("A",2,PRIORITY_A,0,5,'');
     xTaskCreate( pvTask_B, ( const signed char * const ) "B", configMINIMAL_STACK_SIZE, NULL, PRIORITY_B, NULL );
     TaskHandle_t xTHB = xTaskGetHandle("B");
     TMAN_TaskAdd("B", xTHB);
-    TMAN_TaskRegisterAttributes("B",3,PRIORITY_B,0,0);
+    TMAN_TaskRegisterAttributes("B",3,PRIORITY_B,0,0,'');
     xTaskCreate( pvTask_C, ( const signed char * const ) "C", configMINIMAL_STACK_SIZE, NULL, PRIORITY_C, NULL );
     TaskHandle_t xTHC = xTaskGetHandle("C");
     TMAN_TaskAdd("C", xTHC);
-    TMAN_TaskRegisterAttributes("C",4,PRIORITY_C,0,0);
+    TMAN_TaskRegisterAttributes("C",4,PRIORITY_C,0,0,'');
     xTaskCreate( pvTask_D, ( const signed char * const ) "D", configMINIMAL_STACK_SIZE, NULL, PRIORITY_D, NULL );
     TaskHandle_t xTHD = xTaskGetHandle("D");
     TMAN_TaskAdd("D", xTHD);
-    TMAN_TaskRegisterAttributes("D",5,PRIORITY_D,0,0);
+    TMAN_TaskRegisterAttributes("D",5,PRIORITY_D,0,0,'');
     xTaskCreate( pvTask_E, ( const signed char * const ) "E", configMINIMAL_STACK_SIZE, NULL, PRIORITY_E, NULL );
     TaskHandle_t xTHE = xTaskGetHandle("E");
     TMAN_TaskAdd("E", xTHE);
-    TMAN_TaskRegisterAttributes("E",6,PRIORITY_E,0,0);
+    TMAN_TaskRegisterAttributes("E",6,PRIORITY_E,0,0,'');
     xTaskCreate( pvTask_F, ( const signed char * const ) "F", configMINIMAL_STACK_SIZE, NULL, PRIORITY_F, NULL );
     TaskHandle_t xTHF = xTaskGetHandle("F");
     TMAN_TaskAdd("F", xTHF);
-    TMAN_TaskRegisterAttributes("F",7,PRIORITY_F,0,0);
+    TMAN_TaskRegisterAttributes("F",7,PRIORITY_F,0,0,'');
     
     /* Finally start the scheduler. */
 	vTaskStartScheduler();
