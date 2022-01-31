@@ -30,7 +30,7 @@
 
 /* Set the tasks' period (in system ticks) */
 #define PERIOD_A 	( 2 )
-#define PERIOD_B 	( 3 )
+#define PERIOD_B 	( 0 )
 #define PERIOD_C 	( 4 )
 #define PERIOD_D 	( 5 )
 #define PERIOD_E 	( 6 )
@@ -92,6 +92,12 @@ void TMAN_TaskWaitPeriod(char* nome){
     int index = TMAN_GetTaskFromList(nome);
     taskList[index].state = 0;
     vTaskSuspend(taskList[index].tHandle);
+    
+    // ---------------------------------- 
+    if(strcmp(taskList[index].precedence, "\0")!=0){
+        int i = TMAN_GetTaskFromList(taskList[index].precedence);
+        vTaskResume(taskList[i].tHandle);
+    }
 }
 
 void TMAN_TaskAdd(char* nome, TaskHandle_t task){
@@ -146,17 +152,14 @@ void pvTask_Master(void *pvParam){
         
         for(int i=1 ; i<idx ; i++){
             if(TMAN_Ticks<taskList[i].phase) continue;
-            if(taskList[i].deadline > 0 && (taskList[i].phase + taskList[i].deadline + (taskList[i].period * taskList[i].nActivations) < TMAN_Ticks ) && (taskList[i].state == 1)){
+            if((taskList[i].period>0) && (taskList[i].deadline > 0) && (taskList[i].phase + taskList[i].deadline + (taskList[i].period * taskList[i].nActivations) < TMAN_Ticks ) && (taskList[i].state == 1)){
                 vTaskSuspend(taskList[i].tHandle);
                 sprintf(mesg,"DeadLine: %s \n\r", taskList[i].name);
                 PrintStr(mesg);
                 taskList[i].state = 0;
                 taskList[i].dlMisses++;
             }
-            if(strcmp(taskList[i].precedence, "")!=0){
-                
-            }
-            if((((TMAN_Ticks - taskList[i].phase ) % taskList[i].period) == 0) && taskList[i].state==0){
+            if((taskList[i].period>0) && (((TMAN_Ticks - taskList[i].phase ) % taskList[i].period) == 0) && taskList[i].state==0){
                 taskList[i].state = 1;
                 taskList[i].nActivations++;
                 vTaskResume(taskList[i].tHandle);
@@ -316,7 +319,7 @@ int mainProjectSOTR( void ) {
 	xTaskCreate( pvTask_A, ( const signed char * const ) "A", configMINIMAL_STACK_SIZE, NULL, PRIORITY_A, NULL );
     TaskHandle_t xTHA = xTaskGetHandle("A");
     TMAN_TaskAdd("A", xTHA);
-    TMAN_TaskRegisterAttributes("A",PERIOD_A,PRIORITY_A,0,5,"");
+    TMAN_TaskRegisterAttributes("A",PERIOD_A,PRIORITY_A,0,5,"B");
     
     xTaskCreate( pvTask_B, ( const signed char * const ) "B", configMINIMAL_STACK_SIZE, NULL, PRIORITY_B, NULL );
     TaskHandle_t xTHB = xTaskGetHandle("B");
@@ -345,6 +348,8 @@ int mainProjectSOTR( void ) {
     
     /* Finally start the scheduler. */
 	vTaskStartScheduler();
+    
+    TMAN_Close();
 
 	/* Will only reach here if there is insufficient heap available to start
 	the scheduler. */
